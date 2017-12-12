@@ -1,0 +1,338 @@
+#!/usr/bin/env bash
+
+set -e
+set -o pipefail
+
+# Downloads various tools as required ($1)
+# saves a copy to $software and places a symlink in $bin
+
+# This script uses a few tools, soz :/
+# - wget
+
+
+##TL;DR downloads relative to here this script is stored into .vendor
+MYSELF="$(realpath $0)"
+SCRIPTPATH="$(dirname $MYSELF)"
+source "${SCRIPTPATH}/shell_functions"
+ret=$?
+if [ ! X$ret == X0 ]; then
+  echo "$MYSELF: error sourcing shell functions"
+  exit 1
+fi
+
+
+
+vendor="${ROOTDIR}/vendor/tmp"
+bin="${ROOTDIR}/vendor/bin"
+
+
+is_linux(){
+  #returns 0 if linux, else 1
+
+  # # Usage example
+  #
+  # if is_linux ; then
+  #   echo doing something linux specific
+  # else
+  #   echo im a little teapot
+  # fi
+
+  ARCH="$(uname)"
+  # ARCH="Darwin"
+  # ARCH="Linux"
+
+  if [ X"$ARCH" == X"Linux" ]; then
+    # is linux
+    return 0
+  else
+    # is not Linux
+    return 1
+  fi
+}
+
+
+if is_linux; then
+  export arch="linux"
+else
+  export arch="darwin"
+fi
+export cpu="amd64"  #or 386
+
+for a in wget ; do
+  check_for_cmd "$a"
+done
+
+function function::download(){
+  ok "downloading: $@"
+  try wget -q -c "$@"
+}
+
+delete_if_exists(){
+  if [ -f "$1" ]; then
+    rm -fv "$1"
+  fi
+  if [ -d "$1" ]; then
+    rm -rvf "$1"
+  fi
+}
+
+mkdir -p "${bin}"
+mkdir -p "${vendor}"
+
+##############################################
+#: deis
+install_deis(){
+  name=deis
+  ver="2.0.0"
+  out_dir="${vendor}/${name}"
+  out_file="${name}-${ver}"
+  mkdir -p "${out_dir}"
+  cd "${out_dir}"
+
+  # if is_linux ; then
+  #   arch="linux-amd64"
+  #   cpu="amd64"
+  # else
+  #   cpu="amd64"
+  #   arch="darwin-amd64"
+  # fi
+
+  URL=https://storage.googleapis.com/workflow-cli-release/v${ver}/deis-v${ver}-${arch}-${cpu}
+  function::download -O "${out_file}" "${URL}"
+
+  chmod +x "${out_file}"
+  cd "${bin}"
+  ln -sf "${out_dir}/${out_file}" "${name}"
+}
+
+##############################################
+#: gofabric8
+install_gofabric8(){
+  name="gofabric8"
+  ver="0.4.104"
+  out_dir="${vendor}/${name}"
+  out_file="${name}-v${ver}"
+  mkdir -p "${out_dir}"
+  cd "${out_dir}"
+
+  URL=https://github.com/fabric8io/gofabric8/releases/download/v${ver}/gofabric8-${arch}-${cpu}
+  function::download -O "${out_file}" ${URL}
+
+  chmod +x "${out_file}"
+  cd "${bin}"
+  ln -sf "${out_dir}/${out_file}" "${name}"
+}
+
+##############################################
+#: k8stail
+install_k8stail(){
+  name=k8stail
+  ver=0.5.1
+  out_dir="${vendor}/${name}"
+  out_zip="${name}-${ver}.zip"
+  out_file="${name}-${ver}"
+  mkdir -p "${out_dir}"
+  cd "${out_dir}"
+
+  URL=https://github.com/dtan4/k8stail/releases/download/v${ver}/k8stail-v${ver}-${arch}-${cpu}.zip
+  function::download -O "${out_zip}" "$URL"
+  cd "${out_dir}"
+  unzip -o "${out_zip}"
+  delete_if_exists "${ver}"
+  # delete_if_exists "${out_zip}"
+  mv -f "${arch}-${cpu}" "${ver}"
+  chmod +x "${ver}/k8stail"
+  cd "${bin}"
+  ln -sf "${out_dir}/${ver}/k8stail" "${name}"
+}
+##############################################
+#: kubectl
+install_kubectl(){
+  name=kubectl
+  ver=1.5.7
+  out_dir="${vendor}/${name}"
+  out_file="${name}-${ver}"
+  mkdir -p "${out_dir}"
+  cd "${out_dir}"
+
+  URL=https://storage.googleapis.com/kubernetes-release/release/v${ver}/bin/${arch}/${cpu}/kubectl
+  function::download -O "${out_file}" "$URL"
+
+  chmod +x "${out_file}"
+  cd "${bin}"
+  ln -sf "${out_dir}/${out_file}" "${name}"
+}
+
+##############################################
+#: minikube
+install_minikube(){
+  name=minikube
+  ver=0.11.0
+  out_dir="${vendor}/${name}"
+  out_file="${name}-${ver}"
+  mkdir -p "${out_dir}"
+  cd "${out_dir}"
+
+  URL=https://storage.googleapis.com/minikube/releases/v${ver}/minikube-${arch}-${cpu}
+  function::download -O "${out_file}" "$URL"
+
+  chmod +x "${out_file}"
+  cd "${bin}"
+  ln -sf "${out_dir}/${out_file}" "${name}"
+}
+
+##############################################
+#: helm
+install_helm(){
+  name=helm
+  ver="2.0.0-beta.2"
+  mkdir -p "${vendor}/${name}-${ver}"
+  cd "${vendor}/${name}-${ver}"
+
+  function::download http://storage.googleapis.com/kubernetes-helm/helm-v${ver}-${arch}-${cpu}.tar.gz
+  delete_if_exists "${name}"
+
+  tar xvf helm-v${ver}-${arch}-${cpu}.tar.gz
+  cd "${bin}"
+  ln -sf "${vendor}/${name}-${ver}/${arch}-${cpu}/${name}" ${name}
+}
+
+##############################################
+#: helmc (helm classic)
+install_helmc(){
+  name=helmc
+  ver="latest"  #0.8.1+a9c55cf at time of writing
+  mkdir -p "${vendor}/${name}-${ver}"
+  cd "${vendor}/${name}-${ver}"
+
+  function::download https://storage.googleapis.com/helm-classic/helmc-latest-${arch}-${cpu}
+  chmod +x helmc-latest-${arch}-${cpu}
+
+  # delete_if_exists "${name}"
+  # tar xvf helm-v${ver}-${arch}-${cpu}.tar.gz
+  cd "${bin}"
+  ln -sf "${vendor}/${name}-${ver}/helmc-latest-${arch}-${cpu}" ${name}
+}
+
+##############################################
+#: packer
+install_packer(){
+  name=packer
+  ver=0.12.0
+  mkdir -p "${vendor}/${name}-${ver}"
+  cd "${vendor}/${name}-${ver}"
+
+  function::download https://releases.hashicorp.com/packer/${ver}/packer_${ver}_${arch}_${cpu}.zip
+  delete_if_exists "${name}"
+
+  unzip packer_${ver}_${arch}_${cpu}.zip
+  cd "${bin}"
+  ln -sf "${vendor}/${name}-${ver}/${name}" ${name}
+}
+
+
+
+##############################################
+#: terraform
+install_terraform(){
+  name=terraform
+  ver=0.10.8
+  mkdir -p "${vendor}/${name}-${ver}"
+  cd "${vendor}/${name}-${ver}"
+
+  function::download https://releases.hashicorp.com/terraform/${ver}/terraform_${ver}_${arch}_${cpu}.zip
+  delete_if_exists "${name}"
+
+  unzip terraform_${ver}_${arch}_${cpu}.zip
+  cd "${bin}"
+  ln -sf "${vendor}/${name}-${ver}/${name}" ${name}
+}
+
+##############################################
+#: cfssljson
+install_cfssljson(){
+  name=cfssljson
+  ver=1.2
+  dest="${vendor}/${name}-${ver}"
+  mkdir -p "$dest"
+  cd "${dest}"
+
+  function::download https://pkg.cfssl.org/R${ver}/cfssljson_${arch}-${cpu}
+  chmod +x cfssljson_${arch}-${cpu}
+
+  cd "${bin}"
+  ln -sf "${dest}/cfssljson_${arch}-${cpu}" ${name}
+}
+##############################################
+#: cfssl
+install_cfssl(){
+  name=cfssl
+  ver=1.2
+  dest="${vendor}/${name}-${ver}"
+  mkdir -p "$dest"
+  cd "${dest}"
+
+  URL=https://pkg.cfssl.org/R${ver}/cfssl_${arch}-${cpu}
+  function::download "$URL"
+
+  chmod +x cfssl_${arch}-${cpu}
+  cd "${bin}"
+  ln -sf "${dest}/cfssl_${arch}-${cpu}" ${name}
+}
+
+##############################################
+#: kops
+install_kops(){
+  # go get -d k8s.io/kops
+  # cd ${GOPATH}/src/k8s.io/kops/
+  # make
+  name=kops
+  ver=1.5.3
+  dest="${vendor}/${name}-${ver}"
+  file=kops-${arch}-${cpu}
+  mkdir -p "${dest}"
+  cd "${dest}"
+
+  URL=https://github.com/kubernetes/kops/releases/download/${ver}/${file}
+  function::download "$URL"
+
+  mkdir -p "$dest"
+  cd "${dest}"
+  chmod +x "${file}"
+  cd "${bin}"
+  ln -sf "${dest}/${file}" "${name}"
+}
+
+##############################################
+#: direnv
+install_direnv(){
+  # go get -d k8s.io/kops
+  # cd ${GOPATH}/src/k8s.io/kops/
+  # make
+  name=direnv
+  ver=2.9.0
+  dest="${vendor}/${name}-${ver}"
+  file=direnv.${arch}-${cpu}
+  mkdir -p "$dest"
+  cd "${dest}"
+
+  URL=https://github.com/direnv/direnv/releases/download/v${ver}/direnv.${arch}-${cpu}
+  function::download "$URL"
+
+  chmod +x "${file}"
+  cd "${bin}"
+  ln -sf "${dest}/${file}" "${name}"
+}
+
+
+if [ "X$1" = X ]; then
+  echo "  Usage: $0 <thing_to_install>"
+  echo " 'things' available are: "
+  grep "^#:" "$MYSELF" | cut -d " " -f 2 | sort
+  exit 1
+else
+  set -e
+  install_$1
+  ok "$1 installed"
+fi
+
