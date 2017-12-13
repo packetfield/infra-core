@@ -76,7 +76,6 @@ clean-terraform:
 #            of your previous run's state files and tmp stuff inside the same directory
 #          TL;DR, rm -rf local storage between runs.., use the cloud for state
 component-clean:
-	# @find "$(ROOTDIR)/terraform/$(COMPONENT)" -type d -name .terraform -exec rm -rf {} +
 	@find "$(ROOTDIR)/terraform/$(COMPONENT)" -type f -name terraform.tfstate -exec rm -v {} +
 	@find "$(ROOTDIR)/terraform/$(COMPONENT)" -type f -name terraform.tfstate.backup -exec rm -v {} +
 
@@ -104,7 +103,7 @@ deps_python:
 ## terraform init
 # Usage:
 #  make ENV=develop COMPONENT=something init
-init:
+init: component-clean
 	cd "$(ROOTDIR)/terraform/$(COMPONENT)" && \
 	terraform init \
 		-backend-config="project=$(GCE_PROJECT)" \
