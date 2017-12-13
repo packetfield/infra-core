@@ -1,0 +1,9 @@
+# The reason for this file is that simply cloning this repo will deal with
+# creating the current working directory, no scripts etc needed
+
+# don't ignore this .gitignore file
+!.gitignore
+
+# we're not going to ask git to track the contents otherwise
+# ignore everything else
+**
