@@ -96,10 +96,10 @@ deps_python:
 	cd "$(ROOTDIR)"
 	@if [ ! -d $(VIRTUAL_ENV)/bin ] ; \
 	then \
-		virtualenv --python=python2.7 "$(VIRTUAL_ENV)" ;\
+		virtualenv --python=python2.7 "$(VIRTUAL_ENV)" ; \
 	fi
-	. $(VIRTUAL_ENV)/bin/activate ; \
-	$(VIRTUAL_ENV)/bin/pip2.7 install -r $(ROOTDIR)/requirements.txt  ; \
+	. $(VIRTUAL_ENV)/bin/activate && \
+	$(VIRTUAL_ENV)/bin/pip2.7 install -r $(ROOTDIR)/requirements.txt  -q
 
 ## terraform init
 # Usage:
