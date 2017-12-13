@@ -208,11 +208,11 @@ apply: init
 # 		--extra-vars "component=$(COMPONENT)" \
 # 		-m setup
 
-# ## get ssh access to machine(s) quickly via gcloud and tags of instances
-# # Usage:
-# #  make ENV=develop COMPONENT=zookeeper ssh
-# ssh:
-# 	@$(ROOTDIR)/bin/make-ssh "$(COMPONENT)" "$(ENV)"
+## get ssh access to machine(s) quickly via gcloud and tags of instances
+# Usage:
+#  make ENV=develop COMPONENT=zookeeper ssh
+ssh:
+	@$(ROOTDIR)/bin/make-ssh "$(COMPONENT)" "$(ENV)"
 
 
 # ## quickly run a command via ansible
