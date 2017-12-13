@@ -1,0 +1,19 @@
+---
+galaxy_info:
+  author: COMPLETEME
+  description: Meta role to call common roles for all servers
+  company: COMPLETEME
+  license: MIT
+  min_ansible_version: 2.3
+
+  platforms:
+  - name: Ubuntu
+    versions:
+    - trusty
+
+  categories:
+  - ops
+
+dependencies:
+  - common
+

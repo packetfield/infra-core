@@ -1,0 +1,34 @@
+---
+
+- name: update apt cache
+  apt:
+    update_cache: yes
+    cache_valid_time: "{{ common_packaging.apt_cache }}"
+
+- name: ensure aptitude is installed
+  apt:
+    pkg: aptitude
+    cache_valid_time: "{{ common_packaging.apt_cache }}"
+
+- name: do upgrades
+  apt:
+    upgrade: "{{ common_packaging.apt_upgrade }}"
+    cache_valid_time: "{{ common_packaging.apt_cache }}"
+
+- name: ensure basic packages installed
+  apt:
+    pkg: "{{ item }}"
+    cache_valid_time: "{{ common_packaging.apt_cache }}"
+  with_items:
+    - "{{ common_packaging_apt_packages }}"
+
+- name: Autoremove unused packages
+  command: apt-get -y autoremove
+  register: autoremove_output
+  changed_when: "'The following packages will be REMOVED' in autoremove_output.stdout"
+
+- name: install python modules
+  pip:
+    name: "{{ item }}"
+  with_items:
+    - "{{ common_packaging_pip_modules }}"

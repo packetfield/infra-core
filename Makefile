@@ -180,19 +180,20 @@ apply: init
 # 		"tag_$(COMPONENT)" \
 # 		-m ping
 
-# ## configure hosts via ansible, you can pass extra args with the $EXTRAS envvar
-# # Usage:
-# #  make ENV=develop COMPONENT=elastic config
-# #   or for more verbosity (EG):
-# #  make ENV=develop COMPONENT=elastic EXTRAS="-vv" config
-# config:
-# 	"$(VIRTUAL_ENV)/bin/ansible-playbook" \
-# 		-u $(REMOTE_USERNAME) \
-# 		-i inventory/gce.py \
-# 		--extra-vars "@$(ROOTDIR)/vars/$(ENV).yml" \
-# 		--extra-vars "@$(ROOTDIR)/vars/$(ENV)-secrets.yml" \
-# 		--extra-vars "component=$(COMPONENT)" \
-# 		playbooks/$(COMPONENT).yml $(EXTRAS)
+## configure hosts via ansible, you can pass extra args with the $ARGS envvar
+# Usage:
+#  make ENV=develop COMPONENT=elastic config
+#   or for more verbosity (EG):
+#  make ENV=develop COMPONENT=elastic ARGS="-vv" config
+config:
+	cd "$(ROOTDIR)/ansible" && \
+	"$(VIRTUAL_ENV)/bin/ansible-playbook" \
+		-u $(REMOTE_USERNAME) \
+		-i inventory/gce.py \
+		--extra-vars "@$(ROOTDIR)/ansible/vars/$(ENV).yml" \
+		--extra-vars "@$(ROOTDIR)/ansible/vars/$(ENV)-secrets.yml" \
+		--extra-vars "component=$(COMPONENT)" \
+		playbooks/$(COMPONENT).yml $(ARGS)
 
 
 # ## run the ansible "setup" module against instances (to see available variables)

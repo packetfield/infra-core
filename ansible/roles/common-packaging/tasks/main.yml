@@ -1,0 +1,7 @@
+---
+
+- include: variables.yml
+  static: no
+
+- include: debian-build.yml
+

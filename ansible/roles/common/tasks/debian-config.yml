@@ -1,0 +1,7 @@
+---
+
+- name: ensure apt is updated
+  apt:
+    update_cache: yes
+    cache_valid_time: "{{ common_packaging.apt_cache }}"
+

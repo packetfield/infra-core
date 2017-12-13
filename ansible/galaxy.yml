@@ -1,0 +1,4 @@
+---
+
+#- src: https://github.com/geerlingguy/ansible-role-postgresql.git
+#  version: 2fbaa2d33e6dd8a333968de27a7422296cca3ade

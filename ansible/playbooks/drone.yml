@@ -1,0 +1,8 @@
+---
+
+#just gathering facts (IPs etc)
+- hosts: "all"
+  become: True
+  gather_facts: True
+  roles:
+    - common
