@@ -15,6 +15,7 @@ MarkupSafe==1.0
 paramiko==2.4.0
 pyasn1==0.4.2
 pycparser==2.18
+pycrypto==2.6.1
 PyNaCl==1.2.1
 PyYAML==3.12
 requests==2.18.4
