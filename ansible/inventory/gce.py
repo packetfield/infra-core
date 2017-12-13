@@ -194,9 +194,27 @@ class GceInventory(object):
         else:
             # Otherwise, assume user wants all instances grouped
             zones = self.parse_env_zones()
-            print(self.json_format_dict(self.inventory,
+            print(self.json_format_dict(self.filter_tags(self.inventory),
                                         pretty=self.args.pretty))
         sys.exit(0)
+
+    def filter_tags(self, inventory):
+        tags = [i for i in os.environ.get('INVENTORY_TAGS', '').split(',') if i]
+        if not tags:
+            return inventory
+
+        hosts = []
+        for tag in tags:
+            hosts.extend(inventory['tag_' + tag])
+        hosts = set(hosts)
+        for group, group_hosts in inventory.iteritems():
+            inventory[group] = [host for host in group_hosts if host in hosts]
+        for group, group_hosts in inventory.items():
+            if not group_hosts:
+                inventory.pop(group)
+
+        return inventory
+
 
     def get_config(self):
         """
