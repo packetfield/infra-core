@@ -32,4 +32,14 @@ gsutil mb -p ${PROJECT} -c regional -l ${LOCATION} gs://${BUCKET}/
 gsutil versioning set on  gs://${BUCKET}
 ```
 
+### manually added NS records
+
+```
+# First created the "shared" zone which is **packetfield.com** itself
+make ENV=shared COMPONENT=dns apply
+
+# then check the NS servers that were created.. and point the domain/whois records at them
+```
+(they were ns-cloud-d[1,2,3,4].googledomains.com for the record)
+
 
