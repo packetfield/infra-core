@@ -1,8 +1,7 @@
 ---
 
-#just gathering facts (IPs etc)
-- hosts: "all"
+- hosts: "tag_{{ component }}"
   become: True
   gather_facts: True
   roles:
-    - common
+    - drone-server
