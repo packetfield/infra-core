@@ -43,3 +43,24 @@ make ENV=shared COMPONENT=dns apply
 (they were ns-cloud-d[1,2,3,4].googledomains.com for the record)
 
 
+
+### Ansible inventory notes
+
+gce.py has been modified to look for an environmental variable..
+
+If its set it will filter the hosts only for those with a tag matching that value.
+
+This ensures we don't accidentally target hosts in other environments
+
+EG:
+
+```
+# show all hosts
+./ansible/inventory/gce.py| jq .
+
+# show "shared" hosts..
+INVENTORY_TAG_FILTER=shared ./ansible/inventory/gce.py| jq .
+
+```
+
+This variable is set in the Makefile based on the `$ENV` at runtime

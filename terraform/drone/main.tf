@@ -10,6 +10,10 @@ resource "google_compute_disk" "disk1" {
     size  = "${var.data_volume_size}"
 }
 
+resource "google_compute_address" "default" {
+  name = "test-address"
+}
+
 module "instance1" {
   instance_id   = "1"
   data_disk     = "${google_compute_disk.disk1.self_link}"
@@ -20,6 +24,7 @@ module "instance1" {
   region        = "${var.region}"
   project       = "${var.project}"
   source        = "./mod_instance"
+  nat_ip        = "${google_compute_address.default.address}"
 }
 
 #####################################
@@ -35,5 +40,22 @@ resource "google_dns_record_set" "default" {
   rrdatas = [
     "${module.instance1.assigned_nat_ip}",
   ]
+}
+
+
+output "internal_ip" {
+  value = "${module.instance1.internal_ip}"
+}
+
+output "network_ip" {
+  value = "${module.instance1.network_ip}"
+}
+
+output "nat_ip" {
+  value = "${module.instance1.nat_ip}"
+}
+
+output "assigned_nat_ip" {
+  value = "${module.instance1.assigned_nat_ip}"
 }
 

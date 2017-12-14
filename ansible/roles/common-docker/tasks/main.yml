@@ -1,0 +1,41 @@
+---
+
+- name: ensure apt is updated
+  apt:
+    update_cache: yes
+    cache_valid_time: 3600
+
+- name: install docker apt repo key
+  apt_key:
+    url:   https://download.docker.com/linux/debian/gpg
+
+- name: ensure required PPAs are installed
+  apt_repository:
+    repo:  "{{ item }}"
+  with_items:
+    - "deb [arch=amd64] https://download.docker.com/linux/debian stretch edge"
+  register: docker_ppa
+
+- name: update apt
+  apt:
+    update_cache: yes
+  when: docker_ppa.changed == True
+
+- name: apt upgrade
+  apt:
+    upgrade: full
+  when: docker_ppa.changed == True
+
+- name: install docker
+  apt:
+    name: "{{ item }}"
+  with_items:
+    - docker-ce
+    - docker-compose
+
+- name: ensure docker running and enabled
+  service:
+    name: docker
+    state: started
+    enabled: yes
+

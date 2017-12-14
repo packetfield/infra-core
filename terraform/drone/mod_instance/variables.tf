@@ -1,3 +1,4 @@
+variable nat_ip { default = "undefined" }
 variable component { default = "undefined" }
 variable env { default = "testing" }
 variable project { default = "undefined" }

@@ -1,0 +1,27 @@
+---
+
+- name: Import apt gpg keys
+  apt_key:
+    keyserver: keyserver.ubuntu.com
+    id: "{{ item }}"
+  with_items:
+    - "8B48AD6246925553"
+    - "7638D0442B90D010"
+
+- apt_repository:
+    repo: deb http://ftp.de.debian.org/debian jessie-backports main
+    state: present
+
+- name: update apt cache
+  apt:
+    update_cache: yes
+  changed_when: False
+
+- name: install java packages
+  apt:
+    default_release: jessie-backports
+    name: "openjdk-8-jre"
+    # name: openjdk-8-jre-headless
+  notify: set default java
+
+- meta: flush_handlers
