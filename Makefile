@@ -36,8 +36,11 @@ export ANSIBLE_VAULT_PASSWORD_FILE     := $(KEYBASE_TEAM_DIR)/ansible_vault.txt
 # export GOOGLE_CREDENTIALS := $(shell cat ${GCE_PEM_FILE_PATH})
 # export GOOGLE_APPLICATION_CREDENTIALS := $(GCE_PEM_FILE_PATH)
 export BUCKET             := $(GCE_PROJECT)-terraform-state
-export INVENTORY_TAGS     := $(ENV)
 export REMOTE_USERNAME    ?= $(USER)
+
+
+# gce.py will filter only for hosts with a tag that matches this
+export INVENTORY_TAG_FILTER := $(ENV)
 
 
 ## Print this help
@@ -170,15 +173,16 @@ apply: init
 # 		-var component=$(COMPONENT) \
 # 		-var project=$(GCE_PROJECT)
 
-# ## see if you can communicate with hosts
-# # Usage:
-# #  make ENV=develop COMPONENT=zookeeper ping
-# ping:
-# 	"$(VIRTUAL_ENV)/bin/ansible" \
-# 		-u $(REMOTE_USERNAME) \
-# 		-i inventory/gce.py \
-# 		"tag_$(COMPONENT)" \
-# 		-m ping
+## see if you can communicate with hosts
+# Usage:
+#  make ENV=develop COMPONENT=zookeeper ping
+ping:
+	cd "$(ROOTDIR)/ansible" && \
+	"$(VIRTUAL_ENV)/bin/ansible" \
+		-u $(REMOTE_USERNAME) \
+		-i inventory/gce.py \
+		"tag_$(COMPONENT)" \
+		-m ping
 
 ## configure hosts via ansible, you can pass extra args with the $ARGS envvar
 # Usage:

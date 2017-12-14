@@ -199,7 +199,7 @@ class GceInventory(object):
         sys.exit(0)
 
     def filter_tags(self, inventory):
-        tags = [i for i in os.environ.get('INVENTORY_TAGS', '').split(',') if i]
+        tags = [i for i in os.environ.get('INVENTORY_TAG_FILTER', '').split(',') if i]
         if not tags:
             return inventory
 
