@@ -7,7 +7,11 @@ resource "google_compute_firewall" "allow-https" {
 
     allow {
         protocol = "tcp"
-        ports = ["443"]
+        ports = [
+          "80",
+          "443",
+          "8153",
+        ]
     }
 
     source_ranges = [

@@ -1,0 +1,15 @@
+---
+
+# This can be a list of several devices if needed..
+# Please note, if this variable is not set the default behaviour is simply to do nothing
+#
+# Example for a host that you plan to run docker on
+
+# common_storage:
+#   - device: /dev/sdb
+#     mount:  "/var/lib/docker"
+#     opts:   noatime     #(default 'mount' options)
+#     owner:  root
+#     group:  root
+#     mode:   711
+

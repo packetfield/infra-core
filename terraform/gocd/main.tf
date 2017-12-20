@@ -25,6 +25,7 @@ module "instance1" {
   project       = "${var.project}"
   source        = "./mod_instance"
   nat_ip        = "${google_compute_address.default.address}"
+  scopes        = "${var.scopes}"
 }
 
 #####################################

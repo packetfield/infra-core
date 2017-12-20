@@ -1,6 +1,6 @@
 ---
 
-- include: debian-build.yml
+- include_tasks: debian-build.yml
 
-- include: debian-config.yml
+- include_tasks: debian-config.yml
 

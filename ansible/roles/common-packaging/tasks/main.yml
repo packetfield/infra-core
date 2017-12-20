@@ -1,7 +1,7 @@
 ---
 
-- include: variables.yml
+- include_tasks: variables.yml
   static: no
 
-- include: debian-build.yml
+- include_tasks: debian-build.yml
 
