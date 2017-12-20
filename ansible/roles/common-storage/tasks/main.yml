@@ -1,0 +1,5 @@
+---
+
+- name: do storage stuff
+  include_tasks: debian.yml
+  when: common_storage is defined

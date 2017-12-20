@@ -1,0 +1,29 @@
+---
+
+- name: ensure e2fsprogs installed
+  apt:
+    name: e2fsprogs
+
+- name: ensure storage devices are formatted and grown
+  filesystem:
+    fstype:   ext4
+    dev:      "{{ item.device }}"
+    resizefs: yes
+  with_items: "{{ common_storage | default ([]) }}"
+
+- name: Mount up storage devices
+  mount:
+    fstype: ext4
+    state:  mounted
+    name:   "{{ item.mount }}"
+    src:    "{{ item.device }}"
+    opts:   "{{ item.opts | default ('noatime') }}"
+  with_items: "{{ common_storage | default ([]) }}"
+
+- name: ensure propper has permissions to access storage
+  file:
+    path:  "{{ item.mount }}"
+    owner: "{{ item.owner | default ('root') }}"
+    mode:  "{{ item.mode  | default ('0750') }}"
+  with_items: "{{ common_storage | default ([]) }}"
+

@@ -1,4 +1,4 @@
 ---
 
-- include: debian-config.yml
+- include_tasks: debian-config.yml
 

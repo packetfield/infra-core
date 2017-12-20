@@ -27,16 +27,19 @@ export GCE_PROJECT        := packetfield
 export KEYBASE_TEAM_DIR   := /keybase/team/$(GCE_PROJECT)
 
 # secrets inside the teams keybase
-export GOOGLE_APPLICATION_CREDENTIALS  := $(KEYBASE_TEAM_DIR)/packetfield-d853f51b2b3c.json
-export ANSIBLE_VAULT_PASSWORD_FILE     := $(KEYBASE_TEAM_DIR)/ansible_vault.txt
+#export GOOGLE_APPLICATION_CREDENTIALS  := $(KEYBASE_TEAM_DIR)/packetfield-d853f51b2b3c.json
+export ANSIBLE_VAULT_PASSWORD_FILE     ?= $(KEYBASE_TEAM_DIR)/ansible_vault.txt
 
 # for ansible and terraform credentials
 # export GCE_EMAIL          := infrastructure@${GCE_PROJECT}.iam.gserviceaccount.com
-# export GCE_INI_PATH       := $(ROOTDIR)/ansible/inventory/gce.ini
+export GCE_INI_PATH       := $(ROOTDIR)/ansible/inventory/gce.ini
 # export GOOGLE_CREDENTIALS := $(shell cat ${GCE_PEM_FILE_PATH})
 # export GOOGLE_APPLICATION_CREDENTIALS := $(GCE_PEM_FILE_PATH)
 export BUCKET             := $(GCE_PROJECT)-terraform-state
-export REMOTE_USERNAME    ?= $(USER)
+export REMOTE_USER    ?= $(USER)
+
+#set REMOTE_USER=go or use $(USER) if it is available
+# export REMOTE_USER := $(if $(USER),$(USER),go)
 
 
 # gce.py will filter only for hosts with a tag that matches this
@@ -138,40 +141,27 @@ apply: init
 		-input=false -auto-approve \
 		$(ARGS)
 
-# ## destroy infrastructure with terraform
-# # Usage:
-# #  make ENV=develop COMPONENT=kafka destroy-apply
-# destroy-apply: component-clean
-# 	cd "$(ROOTDIR)/terraform/$(COMPONENT)" ; \
-# 	terraform init \
-# 		-backend-config="project=$(GCE_PROJECT)" \
-# 		-backend-config="bucket=$(BUCKET)" \
-# 		-backend-config="path=$(ENV)/$(COMPONENT)/terraform.tfstate" \
-# 		-get=true -get-plugins=true -force-copy=true -input=false
-# 	cd "$(ROOTDIR)/terraform/$(COMPONENT)" ; \
-# 	terraform destroy -force \
-# 		-var-file=config-$(ENV).tfvars \
-# 		-var env=$(ENV) \
-# 		-var component=$(COMPONENT) \
-# 		-var project=$(GCE_PROJECT)
+## destroy infrastructure with terraform
+# Usage:
+#  make ENV=develop COMPONENT=kafka destroy-apply
+destroy-apply: init
+	cd "$(ROOTDIR)/terraform/$(COMPONENT)" && \
+	terraform destroy -force \
+		-var-file=config-$(ENV).tfvars \
+		-var env=$(ENV) \
+		-var component=$(COMPONENT) \
+		-var project=$(GCE_PROJECT)
 
-
-# ## preview what terraform will destroy
-# # Usage:
-# #  make ENV=develop COMPONENT=kafka destroy-plan
-# destroy-plan: component-clean
-# 	cd "$(ROOTDIR)/terraform/$(COMPONENT)" ; \
-# 	terraform init \
-# 		-backend-config="project=$(GCE_PROJECT)" \
-# 		-backend-config="bucket=$(BUCKET)" \
-# 		-backend-config="path=$(ENV)/$(COMPONENT)/terraform.tfstate" \
-# 		-get=true -get-plugins=true -force-copy=true -input=false
-# 	cd "$(ROOTDIR)/terraform/$(COMPONENT)" ; \
-# 	terraform plan -destroy \
-# 		-var-file=config-$(ENV).tfvars \
-# 		-var env=$(ENV) \
-# 		-var component=$(COMPONENT) \
-# 		-var project=$(GCE_PROJECT)
+## preview what terraform will destroy
+# Usage:
+#  make ENV=develop COMPONENT=kafka destroy-plan
+destroy-plan: init
+	cd "$(ROOTDIR)/terraform/$(COMPONENT)" && \
+	terraform plan -destroy \
+		-var-file=config-$(ENV).tfvars \
+		-var env=$(ENV) \
+		-var component=$(COMPONENT) \
+		-var project=$(GCE_PROJECT)
 
 ## see if you can communicate with hosts
 # Usage:
@@ -179,7 +169,7 @@ apply: init
 ping:
 	cd "$(ROOTDIR)/ansible" && \
 	"$(VIRTUAL_ENV)/bin/ansible" \
-		-u $(REMOTE_USERNAME) \
+		-u $(REMOTE_USER) \
 		-i inventory/gce.py \
 		"tag_$(COMPONENT)" \
 		-m ping
@@ -192,7 +182,7 @@ ping:
 config:
 	cd "$(ROOTDIR)/ansible" && \
 	"$(VIRTUAL_ENV)/bin/ansible-playbook" \
-		-u $(REMOTE_USERNAME) \
+		-u $(REMOTE_USER) \
 		-i inventory/gce.py \
 		--extra-vars "@$(ROOTDIR)/ansible/vars/$(ENV).yml" \
 		--extra-vars "@$(ROOTDIR)/ansible/vars/$(ENV)-secrets.yml" \
@@ -205,7 +195,7 @@ config:
 # #  make ENV=develop COMPONENT=somehost setup
 # setup:
 # 	"$(VIRTUAL_ENV)/bin/ansible" \
-# 		-u $(REMOTE_USERNAME) \
+# 		-u $(REMOTE_USER) \
 # 		-i inventory/gce.py \
 # 		"tag_$(COMPONENT)" \
 # 		--extra-vars "@$(ROOTDIR)/vars/$(ENV).yml" \
@@ -219,13 +209,19 @@ config:
 ssh:
 	@$(ROOTDIR)/bin/make-ssh "$(COMPONENT)" "$(ENV)"
 
+## Check your inventory is working etc..
+# Usage (eg):
+#  make inv ENV=shared | jq .
+inv:
+	@$(ROOTDIR)/ansible/inventory/gce.py
+
 
 # ## quickly run a command via ansible
 # # Usage:
 # #  make ENV=develop COMPONENT=somehost run CMD="df -h"
 # run:
 # 	"$(VIRTUAL_ENV)/bin/ansible" \
-# 		-u $(REMOTE_USERNAME) \
+# 		-u $(REMOTE_USER) \
 # 		-i inventory/gce.py \
 # 		"tag_$(COMPONENT)" \
 # 		--extra-vars "@$(ROOTDIR)/vars/$(ENV).yml" \
