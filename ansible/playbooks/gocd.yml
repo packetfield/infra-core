@@ -1,0 +1,18 @@
+---
+
+- hosts: "tag_{{ component }}"
+  become: True
+  gather_facts: True
+
+  vars:
+    common_storage:
+      - device: /dev/sdb
+        mount:  /var/lib/docker
+        opts:   noatime
+        owner:  root
+        group:  root
+        mode:   711
+
+  roles:
+    - common-storage
+    - gocd-server

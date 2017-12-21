@@ -1,0 +1,30 @@
+---
+
+- name: Creating Prometheus Node Exporter Group
+  group:
+    name:  "{{ prometheus_node_exporter_group }}"
+    state: "present"
+  become: true
+
+- name: Creating Prometheus Node Exporter User
+  user:
+    name:   "{{ prometheus_node_exporter_user }}"
+    groups: "{{ prometheus_node_exporter_group }}"
+    state:  "present"
+    system: true
+    append: true
+  become: true
+
+- name: Configuring Prometheus Node Exporter Service
+  template:
+    src: "etc/systemd/system/node_exporter.service.j2"
+    dest: "/etc/systemd/system/node_exporter.service"
+  notify:
+    - reload systemd
+    - restart node_exporter
+  become: true
+  when: ansible_service_mgr == "systemd"
+
+## flush handlers, this will trigger the restart if needed
+- meta: flush_handlers
+

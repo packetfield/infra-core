@@ -1,0 +1,16 @@
+# /etc/systemd/system/node_exporter.service
+[Unit]
+Description=Prometheus Node Exporter
+Documentation=https://prometheus.io/docs/introduction/overview/
+After=network-online.target
+
+[Service]
+User={{ prometheus_node_exporter_user }}
+Restart=on-failure
+ExecStart={{ prometheus_node_exporter_install_dir }}/node_exporter/node_exporter \
+          -web.listen-address ":{{ prometheus_node_exporter_listen_port }}" \
+          -collector.filesystem.ignored-mount-points "^/(sys|proc|dev|dev/shm|/run|/run/lock)($|/)" \
+          -collectors.enabled "conntrack,diskstats,entropy,edac,filefd,filesystem,hwmon,infiniband,loadavg,mdadm,meminfo,netdev,netstat,sockstat,stat,textfile,time,uname,vmstat,wifi,zfs,systemd"
+
+[Install]
+WantedBy=multi-user.target

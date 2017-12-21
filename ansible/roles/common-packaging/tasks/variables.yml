@@ -1,0 +1,13 @@
+---
+
+# This dynamically loads vars from the roles "vars" directory
+# They are tailored to the distribuion in use..
+- name: Include OS-specific variables (Debian).
+  include_vars: "{{ ansible_distribution }}-{{ ansible_distribution_version.split('.')[0] }}.yml"
+  when: ansible_os_family == 'Debian'
+
+- name: Define packages
+  set_fact:
+    common_packaging_apt_packages: "{{ __common_packaging_apt_packages | list }}"
+  when: common_packaging_apt_packages is not defined
+

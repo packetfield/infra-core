@@ -1,0 +1,50 @@
+#!/usr/bin/env bash
+
+set -e
+
+##TL;DR downloads relative to here this script is stored into .vendor
+MYSELF="$(realpath $0)"
+SCRIPTPATH="$(dirname $MYSELF)"
+source "${SCRIPTPATH}/shell_functions"
+ret=$?
+if [ ! X$ret == X0 ]; then
+  echo "$MYSELF: error sourcing shell functions"
+  exit 1
+fi
+
+yell "searching for hosts ENV=$ENV, COMPONENT=$COMPONENT"
+
+
+#filters with two inputs (required tags..)
+URIS=$(gcloud compute instances list --filter="tags.items~^${1}$ AND tags.items~^${2}$" --uri)
+
+if [ -z "$URIS" ]; then
+  err "Problem finding component:${COMPONENT} in env:${ENV}, quitting"
+  exit 1
+fi
+
+#count results
+result_count="$(wc -w <<<$URIS)"
+
+if [ $result_count == 1 ]; then
+  # only one result.. ssh directly
+  echo "gcloud compute ssh ${URIS}"
+  gcloud compute ssh "${URIS}"
+
+elif [ $result_count -gt 1 ]; then
+  list=$(echo ${URIS})
+  #more than one IP found, let the human pick
+  select option in $list "quit";
+  do
+    case $option in
+      "quit")
+        break
+      ;;
+      *)
+        echo "gcloud compute ssh ${option}"
+        gcloud compute ssh "${option}"
+      ;;
+    esac
+  done
+fi
+

@@ -7,13 +7,9 @@ export ROOTDIR="$( cd "$(dirname "$0")" ; cd .. ; pwd -P )"
 script_name="$(basename $0)"
 
 #various bash functions
-function ok(){
-  echo -e "\e[32m${@}\e[0m"
-}
+function ok(){ echo -e "\e[32m${@}\e[0m" ; }
 
-function err(){
-  echo -e "\e[31m${@}\e[0m"
-}
+function err(){ echo -e "\e[31m${@}\e[0m" ; }
 
 
 yell() { echo -e "\e[34m$script_name: $*\e[0m" >&2 ; }
@@ -29,8 +25,8 @@ check_for_cmd(){
   if [ ! "$ret" == "0" ]; then
     err "$script_name: sorry but '$1' was not found in your path"
     exit 1
-  else
-    ok "$script_name: found $1 in path, proceeding"
+#  else
+#    ok "$script_name: found $1 in path, proceeding"
   fi
   set -e
 }

@@ -1,0 +1,12 @@
+---
+
+__common_packaging_apt_packages:
+  - apt-transport-https
+  - ca-certificates
+  - fail2ban
+  - htop
+  - jq
+  - ncdu
+  - python-pip
+  - unzip
+

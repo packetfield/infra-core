@@ -1,0 +1,6 @@
+---
+
+env:        develop
+project_id: packetfield
+# region:     europe-west1
+# zone:       europe-west1-c

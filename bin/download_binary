@@ -6,8 +6,11 @@ set -o pipefail
 # Downloads various tools as required ($1)
 # saves a copy to $software and places a symlink in $bin
 
-# This script uses a few tools, soz :/
-# - wget
+# This script uses a few tools, soz 
+# - curl
+# - unzip
+# - tar
+# cut, grep (GNU) ?
 
 
 ##TL;DR downloads relative to here this script is stored into .vendor
@@ -38,8 +41,6 @@ is_linux(){
   # fi
 
   ARCH="$(uname)"
-  # ARCH="Darwin"
-  # ARCH="Linux"
 
   if [ X"$ARCH" == X"Linux" ]; then
     # is linux
@@ -58,13 +59,15 @@ else
 fi
 export cpu="amd64"  #or 386
 
-for a in wget ; do
+for a in curl cut unzip sed ; do
   check_for_cmd "$a"
 done
 
 function function::download(){
-  ok "downloading: $@"
-  try wget -q -c "$@"
+  URL="$@"
+  FNAME=${URL##*/}
+  ok "downloading: $URL"
+  try curl -L -s -C - -o "$FNAME" "$URL"
 }
 
 delete_if_exists(){
@@ -88,14 +91,6 @@ install_deis(){
   out_file="${name}-${ver}"
   mkdir -p "${out_dir}"
   cd "${out_dir}"
-
-  # if is_linux ; then
-  #   arch="linux-amd64"
-  #   cpu="amd64"
-  # else
-  #   cpu="amd64"
-  #   arch="darwin-amd64"
-  # fi
 
   URL=https://storage.googleapis.com/workflow-cli-release/v${ver}/deis-v${ver}-${arch}-${cpu}
   function::download -O "${out_file}" "${URL}"
@@ -323,7 +318,6 @@ install_direnv(){
   cd "${bin}"
   ln -sf "${dest}/${file}" "${name}"
 }
-
 
 if [ "X$1" = X ]; then
   echo "  Usage: $0 <thing_to_install>"

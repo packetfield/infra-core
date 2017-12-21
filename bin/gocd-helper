@@ -1,0 +1,82 @@
+#!/usr/bin/env bash
+
+set -e
+set -o pipefail
+
+
+# This script is used by gocd to ensure it does some stuff in the correct order..
+
+# Usage (EG)
+######  first setup gcloud environment in workspace, ssh config, python deps
+# ./bin/this_script deps
+#####   then use make as normal... EG:
+# ./bin/this_script make ENV=foo COMPONENT=bar action ARGS="-bla -bla"
+
+# This script is NOT usable by a normal user..
+
+export ROOTDIR="$(pwd -P)"
+export GCE_PROJECT="packetfield"
+
+# override Makefile for the pipeline inside CI-CDI servers
+# where gocd agents have secret volumes mounted
+export SECRETS_DIR="${HOME}/secrets"
+
+# These files are mounted as volumes/secrets inside agent containers
+export ANSIBLE_VAULT_PASSWORD_FILE="${SECRETS_DIR}/ansible_vault.txt"
+export SSH_KEY_FILE="${SECRETS_DIR}/google_compute_engine"
+export GCE_PEM_FILE_PATH="${SECRETS_DIR}/service_account.json"
+
+# GOCD workspace does not feature a $USER variable (unlike your desktop)
+# gcloud/ansible need to decide which user to SSH with...
+export USER=go
+
+
+load_stuff () {
+  export GOOGLE_CREDENTIALS="$(cat $GCE_PEM_FILE_PATH)"
+  export GCE_INI_PATH="${ROOTDIR}/ansible/inventory/gce.ini"
+  export VIRTUAL_ENV="${ROOTDIR}/vendor/python"
+
+  export PATH="${ROOTDIR}/bin:${PATH}"
+  export PATH="${ROOTDIR}/vendor/bin:${PATH}"
+  export PATH="${ROOTDIR}/vendor/python/bin:${PATH}"
+}
+
+
+#########
+#  deps
+#########
+if [ "$1"  == "deps" ]; then
+# need to do this before loading virtualenv, otherwise running "gcloud.py" can be buggy
+gcloud config set project "${GCE_PROJECT}"
+export GCE_EMAIL=$(grep client_email $GCE_PEM_FILE_PATH | sed -e 's/  "client_email": "//g' -e 's/",//g')
+gcloud config set account ${GCE_EMAIL}
+
+load_stuff
+make deps
+
+
+mkdir -p ~/.ssh
+cat >~/.ssh/config<<EOF
+HashKnownHosts no
+
+Host *
+  ServerAliveInterval 30
+  ForwardAgent yes
+  IdentityFile ${SSH_KEY_FILE}
+  User ${USER}
+EOF
+chmod 0600 ~/.ssh/config
+chmod 0700 ~/.ssh
+fi
+
+#########
+#  make
+#########
+if [ "$1"  == "make" ]; then
+  #need to know this variable before "load_stuff" occurs, the VIRTUAL_ENV causes problems with gcloud.py
+  export GCE_EMAIL=$(grep client_email $GCE_PEM_FILE_PATH | sed -e 's/  "client_email": "//g' -e 's/",//g')
+  load_stuff
+  set -x
+  $@
+fi
+

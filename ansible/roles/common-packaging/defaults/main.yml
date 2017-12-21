@@ -1,0 +1,28 @@
+---
+
+common_packaging:
+  apt_autoremove: yes   #cleanup old kernels etc (apt-get autoremove)
+
+  #how long to cache apt updates
+  apt_cache: 604800      #weekly
+
+  # everytime this role is called do one of these
+  # options: no / yes / safe / full / dist
+  apt_upgrade: yes
+
+# # essential apt packages
+# common_packaging_apt_packages:
+#   - apt-transport-https
+#   - ca-certificates
+#   - fail2ban
+#   - htop
+#   - jq
+#   - ncdu
+#   - python-pip
+#   - python-software-properties
+#   - unzip
+
+common_packaging_pip_modules:
+
+  - requests
+
