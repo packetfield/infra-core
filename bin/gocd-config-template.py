@@ -161,7 +161,7 @@ for tfvar in tfvars:
     if env == "shared":
         if component in playbooks:
             debug("{} has ansible".format(tfvar))
-            render_pipe("shared", component, "develop, True)
+            render_pipe("shared", component, "develop", True)
         else:
             debug("{} does not have ansible".format(tfvar))
             render_pipe("shared", component, "develop", False)
