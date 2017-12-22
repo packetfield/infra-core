@@ -9,7 +9,7 @@ pipeline:
       - ./vendor
     volumes:
       - /tmp/cache:/cache
-    cache_key: [ DRONE_REPO_OWNER, DRONE_REPO_NAME, DRONE_BRANCH, DRONE_JOB_NUMBER ]
+    # cache_key: [ DRONE_REPO_OWNER, DRONE_REPO_NAME, DRONE_JOB_NUMBER ]
 
     when:
       # branch: [master, develop]
@@ -34,7 +34,7 @@ pipeline:
       - ./vendor
     volumes:
       - /tmp/cache:/cache
-    cache_key: [ DRONE_REPO_OWNER, DRONE_REPO_NAME, DRONE_BRANCH, DRONE_JOB_NUMBER ]
+   # cache_key: [ DRONE_REPO_OWNER, DRONE_REPO_NAME, DRONE_BRANCH, DRONE_JOB_NUMBER ]
 
     when:
       branch: [master, develop]
