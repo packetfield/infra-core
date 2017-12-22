@@ -1,0 +1,47 @@
+#!/usr/bin/env bash
+
+
+MYSELF="$(realpath $0)"
+SCRIPTPATH="$(dirname $MYSELF)"
+source "${SCRIPTPATH}/shell_functions"
+ret=$?
+if [ ! X$ret == X0 ]; then
+  echo "$MYSELF: error sourcing shell functions"
+  exit 1
+fi
+
+function validate(){
+  echo "#### testing $1 (env: $2) ####"
+  make ENV="${2}" COMPONENT="${1}" init     1>/dev/null 2>/dev/null
+  make ENV="${2}" COMPONENT="${1}" validate 1>/dev/null 2>/dev/null
+}
+
+function find_component(){
+  raw=$(find * -type f -name "config-${1}.tfvars" | sort )
+  for i in $raw ; do
+    cut -d "/" -f 2 <<<"${i}"
+  done
+}
+
+function process_env(){
+  for c in $(find_component ${1}) ; do
+    printf "${1}-${c} :"
+    validate "${c}" "${1}" 2>&1>/dev/null
+    rc="$?"
+    if [ $rc -gt 0 ]; then
+      echo FAIL
+      FAILED=1
+    else
+      echo OK
+    fi
+  done
+}
+
+
+FAILED=0
+echo ":: running 'terraform validate'"
+for envs in shared develop master ; do
+  process_env $envs
+done
+
+exit $FAILED

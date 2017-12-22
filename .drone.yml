@@ -1,0 +1,42 @@
+---
+pipeline:
+
+  # Cache of /vendor  see: https://github.com/Drillster/drone-volume-cache/blob/master/DOCS.md
+  cache-restore:
+    image: drillster/drone-volume-cache
+    restore: true
+    mount:
+      - ./vendor
+    volumes:
+      - /tmp/cache:/cache
+    cache_key: [ DRONE_REPO_OWNER, DRONE_REPO_NAME, DRONE_BRANCH, DRONE_JOB_NUMBER ]
+
+    when:
+      # branch: [master, develop]
+      event: [push, pull_request]
+
+  deps:
+    image: gcr.io/packetfield/image-debian9-virtualenv:fda45cb5
+    commands:
+      - make deps
+
+  terraform-validate:
+    image: gcr.io/packetfield/image-debian9-virtualenv:fda45cb5
+    commands:
+      - make deps
+      - ./bin/terraform-validate
+
+  # Cache of /vendor  see: https://github.com/Drillster/drone-volume-cache/blob/master/DOCS.md
+  cache-rebuild:
+    image: drillster/drone-volume-cache
+    rebuild: true
+    mount:
+      - ./vendor
+    volumes:
+      - /tmp/cache:/cache
+    cache_key: [ DRONE_REPO_OWNER, DRONE_REPO_NAME, DRONE_BRANCH, DRONE_JOB_NUMBER ]
+
+    when:
+      branch: [master, develop]
+      event: [push, pull_request]
+
