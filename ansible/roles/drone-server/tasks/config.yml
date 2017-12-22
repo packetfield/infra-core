@@ -38,6 +38,7 @@
           environment:
             - DRONE_GITHUB=true
             - DRONE_GITHUB_ADMINS=starkers
+            - DRONE_ADMIN=starkers    #github user can grant "trusted" to repos
             - DRONE_HOST=https://drone.packetfield.com
             - DRONE_LETS_ENCRYPT=true
             - DRONE_OPEN=true

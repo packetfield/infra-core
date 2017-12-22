@@ -232,3 +232,15 @@ inv:
 # 		-m shell \
 # 		-a "$(CMD)"
 
+
+## terraform validate
+#  performs a syntax check on a directory and displays debug if an error is detected
+# Usage:
+#  make ENV=develop COMPONENT=kafka validate
+validate:
+	cd "$(ROOTDIR)/terraform/$(COMPONENT)" && \
+	terraform validate \
+		-var-file=config-$(ENV).tfvars \
+		-var env=$(ENV) \
+		-var component=$(COMPONENT) \
+		-var project=$(GCE_PROJECT)
