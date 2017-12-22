@@ -5,6 +5,9 @@ import fnmatch
 import os
 import sys
 
+#make > than 0 for debug stdout
+DEBUG = 0
+
 # the plan...
 
 ## drone-ci runs this step..
@@ -26,6 +29,9 @@ import sys
 ## sample config: https://github.com/d-led/automatic-lua-property-tables/blob/master/ci.gocd.yaml
 
 
+def debug(msg):
+    if DEBUG > 0:
+        print("DEBUG: {}".format(msg))
 
 
 def find_files(dir, string):
@@ -134,7 +140,7 @@ def render_pipe(env, component, branch, has_playbook):
         group=group,
         component=component,
         has_playbook=has_playbook,
-        job_name="{}-{}".format(branch, component)
+        job_name="{}-{}".format(env, component)
         ))
 
 
@@ -142,18 +148,29 @@ render_header()
 
 targets = {}
 for tfvar in tfvars:
+
     component = tfvar.split("/")[1]
     env = tfvar.split("/")[2].split(".")[0].split("-")[1]
+
+    debug("component:{}, env: {} ==== {}".format(component, env, tfvar))
+
+
+    # if component == "dns":
 
 
     if env == "shared":
         if component in playbooks:
-            render_pipe("shared", component, "master", True)
+            debug("{} has ansible".format(tfvar))
+            render_pipe("shared", component, "developer", True)
         else:
-            render_pipe("shared", component, "master", False)
+            debug("{} does not have ansible".format(tfvar))
+            render_pipe("shared", component, "developer", False)
+
     else:
         if component in playbooks:
+            debug("{} has ansible".format(tfvar))
             render_pipe(env, component, env, True)
         else:
+            debug("{} does not have ansible".format(tfvar))
             render_pipe(env, component, env, False)
 
