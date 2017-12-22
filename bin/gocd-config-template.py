@@ -112,7 +112,7 @@ def render_pipe(env, component, branch, has_playbook):
                     - make
                     - ENV={{ env }}
                     - COMPONENT={{ component }}
-                    - plan
+                    - apply
 
 {% if has_playbook == True %}
       - config:
