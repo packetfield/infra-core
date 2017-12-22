@@ -1,0 +1,29 @@
+#!/usr/bin/env bash
+
+
+
+set -xe
+
+CURRENT_HASH="$(git rev-parse HEAD | cut -c 1-8)"
+
+
+DEST_REPO="git@github.com:packetfield/gocd-config.git"
+
+TMPDIR="$(mktemp -d)"
+
+
+git clone "$DEST_REPO" "$TMPDIR"
+
+cd "$TMPDIR"
+git checkout master
+cd  -
+
+./bin/gocd-config-template.py > "${TMPDIR}"/ci.gocd.yaml
+
+cd "${TMPDIR}"
+
+git add :/
+
+git commit -m "infra-core update: ${CURRENT_HASH}"
+
+git push origin master
