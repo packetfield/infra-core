@@ -147,7 +147,7 @@ def render_pipe(env, component, branch, has_playbook):
 render_header()
 
 targets = {}
-for tfvar in tfvars:
+for tfvar in sorted(tfvars):
 
     component = tfvar.split("/")[1]
     env = tfvar.split("/")[2].split(".")[0].split("-")[1]
