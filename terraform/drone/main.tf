@@ -23,9 +23,30 @@ module "instance1" {
   zone          = "${var.zone}"
   region        = "${var.region}"
   project       = "${var.project}"
-  source        = "./mod_instance"
+  source        = "github.com/packetfield/tfmod-instance-with-nat.git?ref=0.1-1"
   nat_ip        = "${google_compute_address.default.address}"
+  scopes        = "${var.scopes}"
 }
+
+resource "google_compute_firewall" "allow-https" {
+    name = "${var.env}-${var.component}-allow-https"
+    network = "default"
+
+    allow {
+        protocol = "tcp"
+        ports = [
+          "443",
+        ]
+    }
+
+    source_ranges = [
+      "0.0.0.0/0"
+    ]
+    target_tags = [
+      "${var.component}",
+    ]
+}
+
 
 #####################################
 ########### DNS
@@ -40,22 +61,5 @@ resource "google_dns_record_set" "default" {
   rrdatas = [
     "${google_compute_address.default.address}",
   ]
-}
-
-
-output "internal_ip" {
-  value = "${module.instance1.internal_ip}"
-}
-
-output "network_ip" {
-  value = "${module.instance1.network_ip}"
-}
-
-output "nat_ip" {
-  value = "${module.instance1.nat_ip}"
-}
-
-output "assigned_nat_ip" {
-  value = "${module.instance1.assigned_nat_ip}"
 }
 

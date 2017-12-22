@@ -8,3 +8,4 @@ variable "size"          { default = "f1-micro" }
 variable region { default = "europe-west1"   }
 variable zone   { default = "europe-west1-d" }
 variable data_volume_size { default = 5 }
+variable scopes { default = [] }
