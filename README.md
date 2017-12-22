@@ -1,4 +1,10 @@
-# Notes
+# Status
+
+
+| develop | master |
+|---|---|
+| [![staging](https://drone.packetfield.com/api/badges/packetfield/infra-core/status.svg?branch=develop)](https://drone.packetfield.com/packetfield/infra-core) | [![prod](https://drone.packetfield.com/api/badges/packetfield/infra-core/status.svg?branch=master)](https://drone.packetfield.com/packetfield/infra-core) |
+
 
 ## suggested workflow notes
 - gitflow for everything, code and infrastructure
@@ -43,8 +49,23 @@ make ENV=shared COMPONENT=dns apply
 (they were ns-cloud-d[1,2,3,4].googledomains.com for the record)
 
 
+### GCR repo is public
 
-### Ansible inventory notes
+```
+
+export PROJECT_NAME=packetfield
+# make all future artifacts open
+gsutil defacl ch -u AllUsers:R gs://artifacts.${PROJECT_NAME}.appspot.com
+
+#Make all current objects in the bucket public (eg, the image you just pushed):
+gsutil acl ch -r -u AllUsers:R gs://artifacts.${PROJECT_NAME}.appspot.com
+
+# Make the bucket itself public (not handled by -r!):
+gsutil acl ch -u AllUsers:R gs://artifacts.${PROJECT_NAME}.appspot.com
+```
+
+
+# Ansible inventory notes
 
 gce.py has been modified to look for an environmental variable..
 
