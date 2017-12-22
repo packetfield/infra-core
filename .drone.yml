@@ -38,5 +38,5 @@ pipeline:
 
     when:
       branch: [master, develop]
-      event: [push, pull_request]
+      event: [push]
 
