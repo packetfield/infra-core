@@ -7,11 +7,11 @@
   vars:
     common_storage:
       - device: /dev/sdb
-        mount:  /var/lib/docker
+        mount:  "{{ drone_docker_home }}"
         opts:   noatime
         owner:  root
         group:  root
-        mode:   711
+        # mode:   711
 
   roles:
     - common-storage
