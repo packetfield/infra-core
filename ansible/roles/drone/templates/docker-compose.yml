@@ -9,12 +9,12 @@ services:
       - 443:443
       - 9000
     volumes:
-      - /var/lib/drone:/var/lib/drone/
+      - ./drone:/var/lib/drone/
     restart: unless-stopped
     environment:
       - DRONE_GITHUB=true
       - DRONE_GITHUB_ADMINS=starkers
-      - DRONE_ADMIN=starkers    #github user can grant "trusted" to repos
+      - DRONE_ADMIN=starkers    #github user who can grant "trusted" status to repos
       - DRONE_HOST=https://drone.packetfield.com
       - DRONE_LETS_ENCRYPT=true
       - DRONE_OPEN=true
@@ -22,13 +22,15 @@ services:
       - DRONE_GITHUB_CLIENT={{ drone_github_client }}
       - DRONE_GITHUB_SECRET={{ drone_github_secret }}
       - DRONE_SECRET={{ drone_secret }}
+
   drone-agent:
     image: drone/agent:0.8
     restart: unless-stopped
     depends_on:
       - drone-server
     volumes:
-      - /var/run/docker.sock:/var/run/docker.sock
+      - /var/run/docker.sock:/var/run/docker.sock  #agent needs to spin up contaners and stuff...
     environment:
       - DRONE_SERVER=drone-server:9000
       - DRONE_SECRET={{ drone_secret }}
+
