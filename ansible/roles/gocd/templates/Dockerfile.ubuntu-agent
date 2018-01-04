@@ -1,0 +1,25 @@
+FROM gocd/gocd-agent-ubuntu-16.04:v17.12.0
+
+# NOTE: agent however updated with some python+make+gcloud "stuff"
+# TODO: build and publish this image with drone
+
+ENV DEBIAN_FRONTEND noninteractive
+
+RUN apt-get update
+
+RUN apt-get install -yq --force-yes ca-certificates-java build-essential python-pip python3-pip python-virtualenv locales python-traceback2
+
+# Misc system stuff
+RUN locale-gen en_US.UTF-8
+RUN update-ca-certificates -f
+
+# gcloud SDK
+RUN curl https://packages.cloud.google.com/apt/doc/apt-key.gpg -o /tmp/gpgkey
+RUN apt-key add /tmp/gpgkey
+RUN echo "deb http://packages.cloud.google.com/apt cloud-sdk-xenial main" > /etc/apt/sources.list.d/google-cloud-sdk.list
+RUN apt-get update
+RUN apt-get install google-cloud-sdk -qy
+
+# cleanup
+RUN apt-get -y autoremove
+RUN rm -rf /var/lib/apt/lists/*

@@ -1,0 +1,36 @@
+---
+
+- name: Create directories
+  file:
+    path:  "{{ gocd_docker_home }}/{{ item.path }}"
+    mode:  "{{ item.mode }}"
+    state: directory
+  with_filetree: ../templates/
+  when: item.state == 'directory'
+
+- name: Template files
+  template:
+    src:   "{{ item.src }}"
+    dest:  "{{ gocd_docker_home }}/{{ item.path }}"
+    mode:  "{{ item.mode }}"
+  with_filetree: ../templates/
+  when: item.state == 'file'
+  notify: restart gocd containers
+  register: gocd_files
+
+- name: debug
+  debug: var=gocd_files
+
+- meta: flush_handlers
+
+- name: docker compose gocd
+  docker_service:
+    project_src: "{{ gocd_docker_home }}"
+
+
+# - name: validate for drone is listening
+#   wait_for:
+#     port:    443
+#     delay:   3
+#     timeout: 30
+

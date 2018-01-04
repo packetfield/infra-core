@@ -1,0 +1,94 @@
+---
+version: "2"
+services:
+
+  oauth2-proxy:
+    restart: always
+    logging:
+      driver: journald
+    image: 'a5huynh/oauth2_proxy:2.2'
+    environment:
+      VIRTUAL_HOST: {{ gocd_fqdn }}
+      VIRTUAL_PORT: 4180
+      LETSENCRYPT_HOST: {{ gocd_fqdn }}
+      LETSENCRYPT_EMAIL: {{ gocd_letsencrypt_email }}
+      OAUTH2_PROXY_CLIENT_ID: {{ gocd_oauth2_proxy_client_id }}
+      OAUTH2_PROXY_CLIENT_SECRET: {{ gocd_oauth2_proxy_client_secret }}
+      OAUTH2_PROXY_COOKIE_SECRET: {{ gocd_oauth2_proxy_cookie_secret }}
+      OAUTH2_PROXY_COOKIE_NAME: {{ gocd_oauth2_proxy_cookie_name }}
+
+    command: >
+      '--pass-host-header=true'
+      '--pass-access-token=false'
+      '--pass-basic-auth=false'
+      '--pass-user-headers=false'
+      '--http-address=0.0.0.0:4180'
+      '--cookie-secure=true'
+      '--cookie-expire=24h'
+      '--cookie-httponly=true'
+      '--cookie-domain={{ gocd_fqdn }}'
+      '--upstream=http://go-server:8153'
+      '--github-org={{ gocd_oauth2_proxy_github_org }}'
+      '--provider=github'
+      '--email-domain=*'
+
+    links:
+      - go-server
+
+  #see: https://hub.docker.com/r/gocd/gocd-server/
+  go-server:
+    restart: always
+    logging:
+      driver: journald
+    image: gocd/gocd-server:v17.12.0
+    ports:
+      - '8153:8153'
+      - '8154:8154'
+    volumes:
+      - ./server-godata:/godata
+      - ./server-init-scripts:/docker-entrypoint.d  #just a chown to ensure godata is +rw
+
+  # Find out about the agent here:
+  # - https://hub.docker.com/r/gocd/gocd-agent-ubuntu-16.04/
+  goagent_ubuntu:
+    restart: always
+    logging:
+      driver: journald
+    build:
+      context: .
+      dockerfile: Dockerfile.ubuntu-agent
+    links:
+      - go-server
+    environment:
+      AGENT_AUTO_REGISTER_KEY: '{{ gocd_auto_register_key }}'
+      AGENT_AUTO_REGISTER_RESOURCES: 'ubuntu,terraform'
+      GO_SERVER_URL: https://go-server:8154/go
+    volumes:
+      - ./agent-secrets:/home/go/secrets
+      - ./agent-godata:/godata                  #this allows /godata/pipelines to be persisted
+
+  nginx-proxy:
+    restart: always
+    logging:
+      driver: journald
+    image: jwilder/nginx-proxy
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - /etc/nginx/vhost.d
+      - /usr/share/nginx/html
+      - /var/run/docker.sock:/tmp/docker.sock:ro
+      - ./nginx-certs:/etc/nginx/certs
+
+  letsencrypt-nginx-proxy-companion:
+    restart: always
+    logging:
+      driver: journald
+    image: jrcs/letsencrypt-nginx-proxy-companion
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - ./nginx-certs:/etc/nginx/certs
+    volumes_from:
+      - nginx-proxy
+

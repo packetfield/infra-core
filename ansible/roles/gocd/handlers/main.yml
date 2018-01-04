@@ -1,0 +1,13 @@
+---
+
+# docker-compose restart (basically)
+- name: restart gocd containers
+  docker_service:
+    project_src: "{{ gocd_docker_home }}"
+    restarted: yes
+  notify: wait a bit for docker to settle
+
+- name: wait a bit for docker to settle
+  wait_for: timeout=30
+  delegate_to: localhost
+

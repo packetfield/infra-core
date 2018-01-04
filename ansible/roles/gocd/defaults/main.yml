@@ -1,0 +1,29 @@
+---
+
+# gocd will have volumes + docker-compose etc all under this dir
+gocd_docker_home: /opt/gocd
+
+# your public gocd hostname.. must be resolvable for letsencrypt to work etc.
+gocd_fqdn: gocd.example.com
+
+# letsencrypt "email" used to register SSL certs (ACME)
+gocd_letsencrypt_email: "admin@example.com"
+
+
+# oauth2_proxy details
+gocd_oauth2_proxy_client_id:     "somerandomclient_id"
+gocd_oauth2_proxy_client_secret: "somerandomclient_secret"
+gocd_oauth2_proxy_cookie_secret: "somerandomcookie_secret"
+gocd_oauth2_proxy_cookie_name:   "unique_cookie_name123"
+
+# github provider required an org with oauth2
+gocd_oauth2_proxy_github_org: "example-org"
+
+### gocd itself
+# agents will use this key to automatically register with the server
+gocd_auto_register_key: "ilaiurgliasufdl"
+
+
+# repo providing configs (see: yaml.config.plugin)
+gocd_remote_yaml_config_name: 'ops'
+gocd_remote_yaml_config_src: 'https://github.com/packetfield/gocd-config.git'

@@ -15,5 +15,5 @@
 
   roles:
     - common-storage
-    - drone-server
+    - drone
 

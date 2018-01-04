@@ -1,21 +1,5 @@
 ---
 
-- name: install service account
-  copy:
-    src: serviceaccount.json
-    dest: /tmp/serviceaccount.json
-  changed_when: False
-
-- name: docker login
-  shell: docker login -u _json_key -p "$(cat /tmp/serviceaccount.json)" eu.gcr.io
-  changed_when: False
-
-- name: remove service account file
-  file:
-    path: /tmp/serviceaccount.json
-    state: absent
-  changed_when: False
-
 - name: pull drone image "{{ drone_image }}:{{ drone_tag }}"
   docker_image:
     name: "{{ drone_image }}:{{ drone_tag }}"

@@ -1,3 +1,7 @@
 ---
 
-foo: bar
+## gocd specifics
+gocd_fqdn: gocd.packetfield.com
+gocd_letsencrypt_email: david@starkers.org
+
+gocd_oauth2_proxy_github_org: packetfield
