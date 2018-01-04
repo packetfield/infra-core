@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<cruise xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="cruise-config.xsd" schemaVersion="100">
+  <server artifactsdir="artifacts" siteUrl="https://{{ gocd_fqdn }}" jobTimeout="10" agentAutoRegisterKey="{{ gocd_auto_register_key }}" webhookSecret="58ac44d7-1b4c-4a42-b918-ec435f5c9575" commandRepositoryLocation="default" serverId="fdd552d1-1696-4350-81a1-5b60d1c587d3" tokenGenerationKey="7d892ac2-e7ea-452c-b00b-46ef3b09affa" />
+  <config-repos>
+    <config-repo pluginId="yaml.config.plugin" id="{{ gocd_remote_yaml_config_name }}">
+      <git url="{{ gocd_remote_yaml_config_src }}" />
+    </config-repo>
+  </config-repos>
+</cruise>

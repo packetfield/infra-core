@@ -29,17 +29,16 @@ module "instance1" {
 }
 
 
-resource "google_compute_firewall" "allow-https" {
-    name = "${var.env}-${var.component}-allow-https"
+resource "google_compute_firewall" "http" {
+    name = "${var.env}-${var.component}-http"
     network = "default"
-
     allow {
         protocol = "tcp"
         ports = [
+          "80",
           "443",
         ]
     }
-
     source_ranges = [
       "0.0.0.0/0"
     ]
@@ -58,4 +57,9 @@ resource "google_dns_record_set" "default" {
     "${google_compute_address.default.address}",
   ]
 }
+
+output "assigned_nat_ip" { value = "${module.instance1.assigned_nat_ip}" }
+output "internal_ip"     { value = "${module.instance1.internal_ip}" }
+output "nat_ip"          { value = "${module.instance1.nat_ip}" }
+output "network_ip"      { value = "${module.instance1.network_ip}" }
 
