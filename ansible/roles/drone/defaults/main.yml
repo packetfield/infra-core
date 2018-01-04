@@ -3,6 +3,7 @@
 drone_image: drone/drone
 drone_tag: 0.8
 
+drone_docker_home: /opt/drone
 
 # over-right these with secrets from your ansible-vault.. eg vars/shared-secrets.yml
 drone_github_client: someclientid
