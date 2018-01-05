@@ -6,7 +6,7 @@ set -o pipefail
 # Downloads various tools as required ($1)
 # saves a copy to $software and places a symlink in $bin
 
-# This script uses a few tools, soz 
+# This script uses a few tools, soz
 # - curl
 # - unzip
 # - tar

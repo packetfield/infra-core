@@ -1,29 +1,41 @@
 #!/usr/bin/env bash
 
-
-
-set -xe
+export ROOTDIR="$( cd "$(dirname "$0")" ; cd .. ; pwd -P )"
+export VIRTUAL_ENV="${ROOTDIR}/vendor/python"
+export PATH="${VIRTUAL_ENV}/bin:${ROOTDIR}/vendor/bin:${ROOTDIR}/bin:${PATH}"
+source ${ROOTDIR}/bin/shell_functions
 
 CURRENT_HASH="$(git rev-parse HEAD | cut -c 1-8)"
+TIME="$(date "+%Y-%m-%d %H:%M:%S")"
 
-
+# will operate on this git repo
 DEST_REPO="git@github.com:packetfield/gocd-config.git"
 
 TMPDIR="$(mktemp -d)"
 
+try git config --global user.email "packetfield-bot@starkers.org"
+try git config --global user.name "Packetfield Bot"
+try git clone "$DEST_REPO" "$TMPDIR"
+try cd "$TMPDIR"
+try git checkout master
+try cd  -
+try ./bin/gocd-config-template.py > "${TMPDIR}"/ci.gocd.yaml
 
-git clone "$DEST_REPO" "$TMPDIR"
+try cd "${TMPDIR}"
 
-cd "$TMPDIR"
-git checkout master
-cd  -
 
-./bin/gocd-config-template.py > "${TMPDIR}"/ci.gocd.yaml
+if [ -z "$(git status --porcelain)" ]; then
+  # Working directory clean
+  yell "no changes"
+else
+  # Uncommitted changes
+  yell "git says there are changes"
+  try git --no-pager diff --color=always
+  try git add :/
+  git commit -m "infra-core update: ${CURRENT_HASH}"
+  git push origin master
+fi
 
-cd "${TMPDIR}"
+try cd  -
+try rm -rf "${TMPDIR}"
 
-git add :/
-
-git commit -m "infra-core update: ${CURRENT_HASH}"
-
-git push origin master

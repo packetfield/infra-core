@@ -14,7 +14,7 @@ function err(){ echo -e "\e[31m${@}\e[0m" ; }
 
 yell() { echo -e "\e[34m$script_name: $*\e[0m" >&2 ; }
 die() { err "$*"; exit 111; }
-try() { "$@" || die "cannot $*"; }
+try() { yell "$@" ; "$@" || die "cannot $*"; }
 
 
 # check a command exists in users path
@@ -25,8 +25,6 @@ check_for_cmd(){
   if [ ! "$ret" == "0" ]; then
     err "$script_name: sorry but '$1' was not found in your path"
     exit 1
-#  else
-#    ok "$script_name: found $1 in path, proceeding"
   fi
   set -e
 }

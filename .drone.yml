@@ -40,3 +40,13 @@ pipeline:
       branch: [master, develop]
       event: [push]
 
+  # updates the gocd pipelines
+  gocd-config:
+    image: gcr.io/packetfield/image-debian9-virtualenv:fda45cb5
+    commands:
+      - sh .drone-gocd.sh
+    when:
+      branch: [develop]
+      event: [push]
+    secrets: [ ssh_key ]
+
