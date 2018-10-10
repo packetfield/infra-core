@@ -12,11 +12,15 @@ if [ ! X$ret == X0 ]; then
   exit 1
 fi
 
+set -u
+ENV="$1"
+COMPONENT="$2"
+
 yell "searching for hosts ENV=$ENV, COMPONENT=$COMPONENT"
 
 
 #filters with two inputs (required tags..)
-URIS=$(gcloud compute instances list --filter="tags.items~^${1}$ AND tags.items~^${2}$" --uri)
+URIS=$(gcloud compute instances list --filter="tags.items~^${ENV}-${COMPONENT}$" --uri)
 
 if [ -z "$URIS" ]; then
   err "Problem finding component:${COMPONENT} in env:${ENV}, quitting"

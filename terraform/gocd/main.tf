@@ -23,7 +23,7 @@ module "instance1" {
   zone          = "${var.zone}"
   region        = "${var.region}"
   project       = "${var.project}"
-  source        = "github.com/packetfield/tfmod-instance-with-nat.git?ref=0.1-1"
+  source        = "github.com/packetfield/tfmod-instance-with-nat.git?ref=0.3"
   nat_ip        = "${google_compute_address.default.address}"
   scopes        = "${var.scopes}"
 }
@@ -40,10 +40,10 @@ resource "google_compute_firewall" "http" {
         ]
     }
     source_ranges = [
-      "0.0.0.0/0"
+      "0.0.0.0/0",
     ]
     target_tags = [
-      "${var.component}",
+      "${var.env}-${var.component}",
     ]
 }
 

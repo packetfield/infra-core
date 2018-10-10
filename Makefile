@@ -189,6 +189,7 @@ config:
 		--extra-vars "@$(ROOTDIR)/ansible/vars/$(ENV).yml" \
 		--extra-vars "@$(ROOTDIR)/ansible/vars/$(ENV)-secrets.yml" \
 		--extra-vars "component=$(COMPONENT)" \
+		--extra-vars "env=$(ENV)" \
 		playbooks/$(COMPONENT).yml $(ARGS)
 
 # ## run the ansible "setup" module against instances (to see available variables)
@@ -208,7 +209,7 @@ config:
 # Usage:
 #  make ENV=develop COMPONENT=zookeeper ssh
 ssh:
-	@$(ROOTDIR)/bin/make-ssh "$(COMPONENT)" "$(ENV)"
+	@$(ROOTDIR)/bin/make-ssh "$(ENV)" "$(COMPONENT)"
 
 ## Check your inventory is working etc..
 # Usage (eg):
