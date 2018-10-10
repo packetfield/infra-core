@@ -1,5 +1,11 @@
 ---
 
+- name: add gcloud repo key
+  # required for http://packages.cloud.google.com/apt
+  apt_key:
+    keyserver: keyserver.ubuntu.com
+    id: 6A030B21BA07F4FB
+
 - name: ensure apt is updated
   apt:
     update_cache: yes
