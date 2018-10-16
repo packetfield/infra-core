@@ -16,6 +16,9 @@ set -u
 ENV="$1"
 COMPONENT="$2"
 
+yell "ensuring gcloud configured for project: ${GCE_PROJECT}"
+gcloud config set project $GCE_PROJECT
+
 yell "searching for hosts ENV=$ENV, COMPONENT=$COMPONENT"
 
 

@@ -1,6 +1,6 @@
 ---
 
-- hosts: "tag_{{ component }}"
+- hosts: "tag_{{env}}-{{ component }}"
   become: True
   gather_facts: True
 
