@@ -15,17 +15,18 @@ resource "google_compute_address" "default" {
 }
 
 module "instance1" {
-  instance_id   = "1"
-  data_disk     = "${google_compute_disk.disk1.self_link}"
-  size          = "${var.size}"
-  component     = "${var.component}"
-  env           = "${var.env}"
-  zone          = "${var.zone}"
-  region        = "${var.region}"
-  project       = "${var.project}"
-  source        = "github.com/packetfield/tfmod-instance-with-nat.git?ref=0.3"
-  nat_ip        = "${google_compute_address.default.address}"
-  scopes        = "${var.scopes}"
+  instance_id    = "1"
+  data_disk      = "${google_compute_disk.disk1.self_link}"
+  size           = "${var.size}"
+  component      = "${var.component}"
+  env            = "${var.env}"
+  zone           = "${var.zone}"
+  region         = "${var.region}"
+  project        = "${var.project}"
+  source         = "github.com/packetfield/tfmod-instance-with-nat.git?ref=0.4"
+  nat_ip         = "${google_compute_address.default.address}"
+  scopes         = "${var.scopes}"
+  boot_disk_size = 30
 }
 
 
