@@ -1,0 +1,9 @@
+variable cluster_name { default = "undefined" }
+variable component    { default = "undefined" }
+variable description  { default = "undocumented cluster.. tsk tsk" }
+variable disk_size    { default = 50 }
+variable env          { default = "testing" }
+variable machine_type { default = "n1-standard-1" }
+variable project      { default = "undefined" }
+variable region       { default = "europe-west2" }
+variable zone         { default = "europe-west2-b" }

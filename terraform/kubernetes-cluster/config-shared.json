@@ -1,0 +1,25 @@
+{
+	"cluster_name": "ENC[AES256_GCM,data:dAhh2dcKOzjNa7LuTrsrK0Y=,iv:j3yG/q6jr2FTAouR8Ck9s5JsrxQTpcs6UYgVqDrh0t0=,tag:zIuvx9rNk5pGy40RJElrJA==,type:str]",
+	"component": "ENC[AES256_GCM,data:1BGKPdHbEdoxpw==,iv:lXbw5mm4rfuisZd21JPwtQfA3+gwHim+uJQVa+BtxQM=,tag:40oNEIBz2ruNwPSWFSqcxg==,type:str]",
+	"description": "ENC[AES256_GCM,data:BGWkQ+RLP5GLp+Cbz4kMRAUp1gXq1RtiA+mSofx658ljBbF/cg==,iv:idSBXsz7hB+1NdSlsR1pEQLexvoASziJnZQ7ftXgpBw=,tag:qTeT2flvP2BsR1OkhQQhng==,type:str]",
+	"disk_size": "ENC[AES256_GCM,data:40Zr,iv:i3UPEjgG5TojwqHY6cbWAIBEkAB44T7ySvzKeehF1yg=,tag:UEpCCWLeNKXjIDeo1Auudg==,type:float]",
+	"env": "ENC[AES256_GCM,data:branwjDE,iv:xzE5kz4yvcBg/oTYdsCWdRAc6d3bLgn6GWU3JAp4+OA=,tag:lO69giW4Pes4uNTXLpEfWQ==,type:str]",
+	"machine_type": "ENC[AES256_GCM,data:ehaGsjDs1fgZm+tRzQ==,iv:lPK9yll+pSLoKnS3pk3MtexlEvqT152phqDj9gb3z/E=,tag:HrHVdRfhUfKphGN673iSOg==,type:str]",
+	"region": "ENC[AES256_GCM,data:Vhp9yyFoJwMHEtuy,iv:I3ySW2RidQWKkeYV1vGYpbOKkoDviA40FGXUnfnWQv4=,tag:zkMCRdTg2ID9CfXZOeiWig==,type:str]",
+	"zone": "ENC[AES256_GCM,data:2+U1saeuk7o3R//3Zdk=,iv:iro+YA+kcQ2XpSJK2FE7GdH/UKD3aP5cqP7FwhiESCM=,tag:3ldlYiTxseSvLfj7W2KSLQ==,type:str]",
+	"sops": {
+		"kms": null,
+		"gcp_kms": [
+			{
+				"resource_id": "projects/deltashim/locations/global/keyRings/shared-kms-sops/cryptoKeys/shared-kms-sops",
+				"created_at": "2018-06-17T22:14:44Z",
+				"enc": "CiQAJ5H6mjyFDjV8wx35ZIkRS4bsUpWvnRbD6EgSiJUYbg616xUSSQBo86O1BcVJk1IBY4ZiKwMWuxT0CkI+ujeXQ0Vdhin/BWRWn4lj7EWatiryCuE0QryAnoBf9auJhT2W8xpqOWDG6lsLDD6FnZw="
+			}
+		],
+		"lastmodified": "2018-06-17T22:14:45Z",
+		"mac": "ENC[AES256_GCM,data:LiNTB4apf80vjdE+G8Fm9I6ttHyuRh4Lz6/hZPaZQKvTzYtjTyuKnNSPiX6rThZh1cszfBJHDLF1pCqsvMsT2IXcXoxwzrdqf4N5NKIEM8H132cBFtu0LENbqUCQfR1SPZDB30kC+NqLFmC9M5s3unmL1miZxXE0pDHJBp4+kyk=,iv:H873eizBqHFArMnehxPTWEOTmAZJh9hnPSVRJfL32ro=,tag:mX1iamcDR81XqQmry9nFTQ==,type:str]",
+		"pgp": null,
+		"unencrypted_suffix": "_unencrypted",
+		"version": "3.0.5"
+	}
+}
