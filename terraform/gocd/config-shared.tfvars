@@ -1,6 +1,6 @@
 # GOCD does all the terraform+ansible
 
-size = "g1-small"
+size = "custom-2-2048"
 region = "europe-west2"
 zone = "europe-west2-a"
 data_volume_size = 20
