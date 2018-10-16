@@ -1,7 +1,7 @@
 ---
 
 # gocd will have volumes + docker-compose etc all under this dir
-gocd_docker_home: /opt/gocd
+gocd_docker_home: /docker
 
 # your public gocd hostname.. must be resolvable for letsencrypt to work etc.
 gocd_fqdn: gocd.example.com
