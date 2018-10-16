@@ -5,4 +5,4 @@ disk_size    = 150
 env          = "shared"
 machine_type = "n1-standard-2"
 region       = "europe-west2"
-zone         = "europe-west2-b"
+zone         = "europe-west2-a"
